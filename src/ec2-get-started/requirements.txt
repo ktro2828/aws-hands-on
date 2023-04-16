@@ -1,1 +1,4 @@
 aws-cdk.aws-ec2==1.100.0
+black
+flake8
+isort

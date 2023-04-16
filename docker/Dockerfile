@@ -25,14 +25,14 @@ RUN rm -rf /opt/*
 # copy hands-on source code in /root/
 COPY src/ /root/src
 
-COPY .aws/ /root/.aws
-
 # copy .aws if it exists in /root/
-RUN if [ -e "/root/.aws"]; then \
-        echo "\e[32m>> [INFO] Found .aws directory\e[m"; \
+RUN if [ -e "$HOME/.aws"]; then \
+    echo "\e[32m>> [INFO] Found .aws directory\e[m"; \
     else \
-        echo "\e[33m>> [WARN] Can not find .aws directory, please make it in your container!!\e[m"; \
+    echo "\e[33m>> [WARN] Can not find .aws directory, please make it in your container!!\e[m"; \
     fi
+
+COPY $HOME/.aws/ /root/.aws
 
 # Make command line prettier...
 RUN echo "alias ls='ls --color=auto'" >> /root/.bashrc

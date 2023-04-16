@@ -1,5 +1,6 @@
 # aws-hands-on
 
+- [AWSドキュメント](https://docs.aws.amazon.com/ja_jp/)
 - [コードで学ぶAWS入門](https://tomomano.github.io/learn-aws-by-coding/)
 - [Source code](https://github.com/tomomano/learn-aws-by-coding)
 
@@ -10,6 +11,36 @@
 - AWS CDK >= 1.1
 
 ## Install
+
+Configure AWS credential with `aws-sdk`
+
+```shell
+$ aws configure --profile PROFILE_NAME
+```
+
+If `aws-sdk` has not been installed, create manually.
+
+```shell
+$ mkdir ~/.aws && cd ~/.aws
+$ touch credentials config
+```
+
+Example of `credentials` and `config` is as shown below.
+- `credentials`
+
+```txt
+[default]
+aws_access_key_id = XXXXXXXXXX
+aws_secret_access_key = XXXXXXXXXXX
+```
+
+- `config`
+
+```txt
+[default]
+region = ap-northeast-1     # Edit to your region
+output = json               # Edit to your desired output format
+```
 
 ### With Docker
 

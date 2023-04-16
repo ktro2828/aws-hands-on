@@ -1,6 +1,7 @@
-from aws_cdk import core, aws_ec2 as ec2
-
 import os
+
+from aws_cdk import aws_ec2 as ec2
+from aws_cdk import core
 
 
 class CustomEC2(core.Stack):
@@ -9,7 +10,8 @@ class CustomEC2(core.Stack):
 
         # Create VPC (Virtual Private Cloud)
         vpc = ec2.Vpc(
-            self, "CustomEC2-Vpc",
+            self,
+            "CustomEC2-Vpc",
             max_azs=1,  # Availability Zone (AZ)
             cidr="10.10.0.0/23",  # Range of IPv4 in VPC. 10.10.0.0/23 = 10.10.0.0~10.10.1.255
             subnet_configuration=[
@@ -23,18 +25,22 @@ class CustomEC2(core.Stack):
 
         # Security Group settings
         sg = ec2.SecurityGroup(
-            self, "CustomEC2Vpc-Sg",
+            self,
+            "CustomEC2Vpc-Sg",
             vpc=vpc,
             allow_all_outbound=True,
         )
         sg.add_ingress_rule(
             peer=ec2.Peer.any_ipv4(),
-            connection=ec2.Port.tcp(22),  # Allow access to port22 from all IPv4 address.
+            connection=ec2.Port.tcp(
+                22
+            ),  # Allow access to port22 from all IPv4 address.
         )
 
         # Create EC2 instance
         host = ec2.Instance(
-            self, "CustomEc2Instance",
+            self,
+            "CustomEc2Instance",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.MachineImage.latest_amazon_linux(),
             vpc=vpc,
@@ -44,17 +50,21 @@ class CustomEC2(core.Stack):
         )
 
         # print the server address
-        core.CfnOutput(self, "InstancePublicDnsName", value=host.instance_public_dns_name)
+        core.CfnOutput(
+            self, "InstancePublicDnsName", value=host.instance_public_dns_name
+        )
         core.CfnOutput(self, "InstancePublicIp", value=host.instance_public_ip)
+
 
 app = core.App()
 CustomEC2(
-    app, "CustomEC2",
+    app,
+    "CustomEC2",
     key_name=app.node.try_get_context("key_name"),
     env={
         "region": os.environ["CDK_DEFAULT_REGION"],
         "account": os.environ["CDK_DEFAULT_ACCOUNT"],
-    }
+    },
 )
 
 app.synth()

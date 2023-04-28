@@ -4,7 +4,6 @@ use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_ec2::{config::Region, meta::PKG_VERSION, Client, Error};
 use clap::Parser;
 
-
 #[derive(Debug, Parser)]
 struct Opt {
     //  The AWS Region.
@@ -32,9 +31,15 @@ async fn start_instance(client: &Client, id: &str) -> Result<(), Error> {
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
 
-    let Opt {region, instance_id, verbose} = Opt::parse();
+    let Opt {
+        region,
+        instance_id,
+        verbose,
+    } = Opt::parse();
 
-    let region_provider = RegionProviderChain::first_try(region.map(Region::new)).or_default_provider().or_else(Region::new("us-west-2"));
+    let region_provider = RegionProviderChain::first_try(region.map(Region::new))
+        .or_default_provider()
+        .or_else(Region::new("us-west-2"));
     println!();
 
     if verbose {

@@ -29,9 +29,16 @@ async fn enable_monitoring(client: &Client, id: &str) -> Result<(), Error> {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
-    let Opt {region, instance_id, verbose} = Opt::parse();
+    let Opt {
+        region,
+        instance_id,
+        verbose,
+    } = Opt::parse();
 
-    let region_provider: RegionProviderChain = RegionProviderChain::first_try(region.map(Region::new)).or_default_provider().or_else(Region::new("us-west-2"));
+    let region_provider: RegionProviderChain =
+        RegionProviderChain::first_try(region.map(Region::new))
+            .or_default_provider()
+            .or_else(Region::new("us-west-2"));
     println!();
 
     if verbose {
@@ -44,7 +51,7 @@ async fn main() -> Result<(), Error> {
         println!();
     }
 
-    let config: SdkConfig= aws_config::from_env().region(region_provider).load().await;    
+    let config: SdkConfig = aws_config::from_env().region(region_provider).load().await;
     let client: Client = Client::new(&config);
 
     enable_monitoring(&client, &instance_id).await

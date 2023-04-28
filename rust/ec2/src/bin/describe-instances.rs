@@ -1,7 +1,10 @@
 #![allow(clippy::result_large_err)]
 
 use aws_config::{meta::region::RegionProviderChain, SdkConfig};
-use aws_sdk_ec2::{config::Region, meta::PKG_VERSION, Client, Error, operation::describe_instances::DescribeInstancesOutput};
+use aws_sdk_ec2::{
+    config::Region, meta::PKG_VERSION, operation::describe_instances::DescribeInstancesOutput,
+    Client, Error,
+};
 use clap::Parser;
 
 #[derive(Debug, Parser)]
@@ -20,15 +23,16 @@ struct Args {
 }
 
 async fn show_state(client: &Client, ids: Option<Vec<String>>) -> Result<(), Error> {
-    let resp: DescribeInstancesOutput = client.describe_instances().set_instance_ids(ids).send().await?;
+    let resp: DescribeInstancesOutput = client
+        .describe_instances()
+        .set_instance_ids(ids)
+        .send()
+        .await?;
 
     for reservation in resp.reservations().unwrap_or_default() {
         for instance in reservation.instances().unwrap_or_default() {
             println!("Instance ID: {}", instance.instance_id().unwrap());
-            println!(
-                "State:     {:?}",
-                instance.state().unwrap().name().unwrap()
-            );
+            println!("State:     {:?}", instance.state().unwrap().name().unwrap());
             println!();
         }
     }
@@ -49,9 +53,16 @@ async fn show_state(client: &Client, ids: Option<Vec<String>>) -> Result<(), Err
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
-    let Args {region, instance_id, verbose} = Args::parse();
+    let Args {
+        region,
+        instance_id,
+        verbose,
+    } = Args::parse();
 
-    let region_provider: RegionProviderChain = RegionProviderChain::first_try(region.map(Region::new)).or_default_provider().or_else(Region::new("us-west-2"));
+    let region_provider: RegionProviderChain =
+        RegionProviderChain::first_try(region.map(Region::new))
+            .or_default_provider()
+            .or_else(Region::new("us-west-2"));
     println!();
 
     if verbose {
@@ -71,7 +82,7 @@ async fn main() -> Result<(), Error> {
     let shared_config: SdkConfig = aws_config::from_env().region(region_provider).load().await;
     let client: Client = Client::new(&shared_config);
 
-    let ids: Option<Vec<String>> = instance_id.map(|id:String| vec![id]);
+    let ids: Option<Vec<String>> = instance_id.map(|id: String| vec![id]);
 
     show_state(&client, ids).await
 }

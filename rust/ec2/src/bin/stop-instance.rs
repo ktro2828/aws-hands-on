@@ -30,9 +30,14 @@ async fn stop_instance(client: &Client, id: &str) -> Result<(), Error> {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
-    let Opt {region, instance_id, verbose} = Opt::parse();
+    let Opt {
+        region,
+        instance_id,
+        verbose,
+    } = Opt::parse();
 
-    let region_provider = RegionProviderChain::first_try(region.map(Region::new)).or_else(Region::new("us-west-2"));
+    let region_provider =
+        RegionProviderChain::first_try(region.map(Region::new)).or_else(Region::new("us-west-2"));
     println!();
 
     if verbose {

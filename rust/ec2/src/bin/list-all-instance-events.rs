@@ -49,9 +49,12 @@ async fn show_all_events(client: &Client) -> Result<(), Error> {
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
-    let Opt {region, verbose} = Opt::parse();
+    let Opt { region, verbose } = Opt::parse();
 
-    let region_provider: RegionProviderChain = RegionProviderChain::first_try(region.map(Region::new)).or_default_provider().or_else(Region::new("us-west-2"));
+    let region_provider: RegionProviderChain =
+        RegionProviderChain::first_try(region.map(Region::new))
+            .or_default_provider()
+            .or_else(Region::new("us-west-2"));
     println!();
 
     if verbose {
